@@ -9,8 +9,8 @@ Prerequisites:
 
 ```bash
 pip list --format=freeze > requirements.txt
-
 ```
+
 2. Ensure you are in the right environment
 * Anaconda/Miniconda:
 ```bash
