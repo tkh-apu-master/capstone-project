@@ -7,6 +7,7 @@ Prerequisites:
 # Note(s)
 1. Update the Python environment when the dependencies is updated. This is to ensure reproducibility in different machines.
 ```bash
+pip freeze > requirements.txt
 pip freeze > requirements-windows.txt
 ```
 
