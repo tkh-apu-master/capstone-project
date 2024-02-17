@@ -30,11 +30,11 @@ capstone-project\Scripts\activate.bat  # On Windows
 0. Create Conda environment specifically for the project, link:
 https://saturncloud.io/blog/how-to-install-tensorflow-with-anaconda-on-windows/
 
-1. Install the Python dependencies:
+1. Install the Python dependencies, with [mirrors**](https://charly-lersteau.com/blog/2019-11-24-faster-python-pip-install-mirrors/) :
 
 ```bash
 conda activate tensorflow
-pip install -r requirements.txt
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
 ```
 
 2. Try to click Run All in you Python notebook.
