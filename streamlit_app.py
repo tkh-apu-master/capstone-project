@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import pickle
 import json
 from tensorflow.keras.models import model_from_json
@@ -42,38 +43,61 @@ def load_dnn_model(fold):
     return dnn_model_weights
 
 
-def display_model_performance(model_name, fold):
-    # Load model performance metrics
-    params_filename = f"{model_name}_fold_{fold}_params.pkl"
-    with open(params_filename, 'rb') as f:
-        params = pickle.load(f)
-
-    # Display performance metrics
-    st.write(f"Model: {model_name}, Fold: {fold}")
-    st.write("Best Parameters:", params)
-    # Add more performance metrics as needed
+def process_data(model, df):
+    # Process data with the selected model
+    predictions = model.predict(df)
+    return predictions
 
 
 # Main Streamlit app logic
 def main():
     # Title and description
-    st.title("Model Performance Analysis")
-    st.write("This app displays the performance metrics of various models.")
+    st.title("Fraud Detection Model")
+    st.write("This app predicts whether transactions are fraudulent or not.")
 
-    # Select model and fold
-    model_list = ["Logistic Regression", "Random Forest", "XGBoost", "DNN"]
-    selected_model = st.selectbox("Select Model", model_list)
-    selected_fold = st.selectbox("Select Fold", [3, 4, 5, 10])
+    # Upload CSV file
+    uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
-    # Display model performance metrics
-    if selected_model == "Logistic Regression":
-        display_model_performance("Logistic Regression", selected_fold)
-    elif selected_model == "Random Forest":
-        display_model_performance("Random Forest", selected_fold)
-    elif selected_model == "XGBoost":
-        display_model_performance("XGBoost", selected_fold)
-    elif selected_model == "DNN":
-        display_model_performance("DNN", selected_fold)
+    if uploaded_file is not None:
+        # Read the uploaded CSV file
+        df = pd.read_csv(uploaded_file)
+
+        # Display some information about the uploaded file
+        st.write("Uploaded CSV file:")
+        st.write(df.head())
+
+        # Select model and fold
+        model_list = ["Logistic Regression", "Random Forest", "XGBoost", "DNN"]
+        selected_model = st.selectbox("Select Model", model_list)
+        selected_fold = st.selectbox("Select Fold", [3, 4, 5, 10])
+
+        # Load the selected model
+        if selected_model == "Logistic Regression":
+            model = load_lr_model(selected_fold)
+        elif selected_model == "Random Forest":
+            model = load_rf_model(selected_fold)
+        elif selected_model == "XGBoost":
+            model = load_xgb_model(selected_fold)
+        elif selected_model == "DNN":
+            model = load_dnn_model(selected_fold)
+
+        # Process the data with the selected model
+        predictions = process_data(model, df)
+
+        # Display the predictions
+        st.write("Predictions:")
+        st.write(predictions)
+
+        # Add a download button for the predictions
+        csv_file = df.copy()
+        csv_file["Prediction"] = predictions
+        csv_file.to_csv("predictions.csv", index=False)
+        st.download_button(
+            label="Download Predictions CSV",
+            data=csv_file.to_csv().encode("utf-8"),
+            file_name="predictions.csv",
+            mime="text/csv"
+        )
 
 
 if __name__ == "__main__":
