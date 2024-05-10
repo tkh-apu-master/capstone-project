@@ -7,7 +7,7 @@ from tensorflow.keras.models import model_from_json
 # Define functions for loading models and displaying results
 def load_lr_model(fold):
     # Load Logistic Regression model
-    model_filename = f"Logistic_Regression_fold_{fold}_model.pkl"
+    model_filename = f"Logistic Regression_fold_{fold}_model.pkl"
     with open(model_filename, 'rb') as f:
         lr_model = pickle.load(f)
     return lr_model
@@ -15,7 +15,7 @@ def load_lr_model(fold):
 
 def load_rf_model(fold):
     # Load Random Forest model
-    model_filename = f"Random_Forest_fold_{fold}_model.pkl"
+    model_filename = f"Random Forest_fold_{fold}_model.pkl"
     with open(model_filename, 'rb') as f:
         rf_model = pickle.load(f)
     return rf_model
@@ -44,7 +44,7 @@ def load_dnn_model(fold):
 
 def display_model_performance(model_name, fold):
     # Load model performance metrics
-    params_filename = f"{model_name}_fold_{fold}_params.pkl"
+    params_filename = f"{model_name} fold_{fold}_params.pkl"
     with open(params_filename, 'rb') as f:
         params = pickle.load(f)
 
@@ -67,9 +67,9 @@ def main():
 
     # Display model performance metrics
     if selected_model == "Logistic Regression":
-        display_model_performance("Logistic_Regression", selected_fold)
+        display_model_performance("Logistic Regression", selected_fold)
     elif selected_model == "Random Forest":
-        display_model_performance("Random_Forest", selected_fold)
+        display_model_performance("Random Forest", selected_fold)
     elif selected_model == "XGBoost":
         display_model_performance("XGBoost", selected_fold)
     elif selected_model == "DNN":
