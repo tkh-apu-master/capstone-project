@@ -44,7 +44,7 @@ def load_dnn_model(fold):
 
 def display_model_performance(model_name, fold):
     # Load model performance metrics
-    params_filename = f"{model_name} fold_{fold}_params.pkl"
+    params_filename = f"{model_name}_fold_{fold}_params.pkl"
     with open(params_filename, 'rb') as f:
         params = pickle.load(f)
 
