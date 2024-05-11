@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 import pickle
 from tensorflow.keras.models import model_from_json
 
@@ -33,7 +35,14 @@ def load_dnn_model(fold):
 
 # Define function for processing data
 def process_data(model, df):
-    predictions = model.predict(df)
+    # Preprocess data
+    imputer = SimpleImputer(strategy='mean')
+    scaler = StandardScaler()
+    df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+    df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
+
+    # Predictions
+    predictions = model.predict(df_scaled)
     return predictions
 
 # Main Streamlit app logic
@@ -45,6 +54,11 @@ def main():
     # Upload CSV file
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
+    # Model selection
+    model_list = ["Logistic Regression", "Random Forest", "XGBoost", "DNN"]
+    selected_model = st.selectbox("Select Model", model_list)
+    selected_fold = st.selectbox("Select Fold", [3, 4, 5, 10])
+
     if uploaded_file is not None:
         # Read the uploaded CSV file
         df = pd.read_csv(uploaded_file)
@@ -53,10 +67,6 @@ def main():
         st.write("Uploaded CSV data:")
         st.write(df.head())
 
-        # Model selection
-        model_list = ["Logistic Regression", "Random Forest", "XGBoost", "DNN"]
-        selected_model = st.selectbox("Select Model", model_list)
-        selected_fold = st.selectbox("Select Fold", [3, 4, 5, 10])
 
         # Load selected model
         if selected_model == "Logistic Regression":
