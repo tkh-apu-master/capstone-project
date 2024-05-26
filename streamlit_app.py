@@ -33,17 +33,75 @@ def load_dnn_model(fold):
     dnn_model_weights.load_weights(model_weights_filename)
     return dnn_model_weights
 
+# Define required features for each model
+required_features = [
+    'Avg_min_between_sent_tnx', 'Avg_min_between_received_tnx',
+    'Time_Diff_between_first_and_last_(Mins)', 'Sent_tnx', 'Received_Tnx',
+    'Number_of_Created_Contracts', 'max_value_received', 'avg_val_received',
+    'avg_val_sent', 'total_Ether_sent', 'total_ether_balance',
+    'ERC20_total_Ether_received', 'ERC20_total_ether_sent',
+    'ERC20_total_Ether_sent_contract', 'ERC20_uniq_sent_addr.1',
+    'ERC20_uniq_rec_token_name'
+]
+
 # Define function for processing data
 def process_data(model, df):
+    # Separate the Address and FLAG columns
+    if 'Address' in df.columns:
+        dfAddress = df['Address']
+        df = df.drop(columns=['Address'])
+    else:
+        dfAddress = None
+
+    if 'FLAG' in df.columns:
+        df = df.drop(columns=['FLAG'])
+
+    # Filter the dataframe to include only the required columns
+    df = df[required_features]
+
     # Preprocess data
     imputer = SimpleImputer(strategy='mean')
     scaler = StandardScaler()
     df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
     df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
 
+
+    print("df.shape: ", df.shape)
+
     # Predictions
     predictions = model.predict(df_scaled)
-    return predictions
+
+    # TODO: My implementation
+    # Omit first two columns (Index, Address)
+    # df = df.iloc[:, 1:]
+    # categories = df.select_dtypes('O').columns.astype('category')
+    # numericals = df.select_dtypes(include=['float', 'int']).columns
+
+    # Drop the two categorical features
+    # df.drop(df[categories], axis=1, inplace=True)
+
+    # Replace missing values of numerical variables with median
+    # df.fillna(df.median(), inplace=True)
+
+    # Filtering the features with 0 variance
+    # no_var = df.var() == 0
+    # Drop features with 0 variance --- these features will not help in the performance of the model
+    # df.drop(df.var()[no_var].index, axis=1, inplace=True)
+
+    # drop = ['total_transactions_(including_tnx_to_create_contract)', 'ERC20_avg_val_rec',
+    #         'ERC20_avg_val_rec', 'ERC20_max_val_rec', 'ERC20_min_val_rec', 'ERC20_uniq_rec_contract_addr',
+    #         'max_val_sent', 'ERC20_avg_val_sent',
+    #         'ERC20_min_val_sent', 'ERC20_max_val_sent', 'Unique_Sent_To_Addresses',
+    #         'Unique_Received_From_Addresses', 'total_ether_received', 'ERC20_uniq_sent_token_name',
+    #         'min_value_received', 'min_val_sent', 'ERC20_uniq_rec_addr']
+    # df.drop(drop, axis=1, inplace=True)
+
+    # drops = ['ERC20_uniq_sent_addr']
+    # df.drop(drops, axis=1, inplace=True)
+
+    # predictions = model.predict(df)
+
+    return predictions, dfAddress
 
 # Main Streamlit app logic
 def main():
@@ -79,11 +137,16 @@ def main():
             model = load_dnn_model(selected_fold)
 
         # Process data with selected model
-        predictions = process_data(model, df)
+        predictions, dfAddress = process_data(model, df)
+
+        # Combine predictions with original data
+        if dfAddress is not None:
+            df['Address'] = dfAddress
+        df['Prediction'] = predictions
 
         # Display predictions
         st.write("Predictions:")
-        st.write(predictions)
+        st.write(df[['Address', 'Prediction']])
 
         # Add download button for predictions
         csv_file = df.copy()
