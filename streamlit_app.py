@@ -36,13 +36,14 @@ def load_dnn_model(fold):
 # Define function for processing data
 def process_data(model, df):
     # Preprocess data
-    imputer = SimpleImputer(strategy='mean')
-    scaler = StandardScaler()
-    df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
-    df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
+    # imputer = SimpleImputer(strategy='median')
+    # scaler = StandardScaler()
+    # df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+    # df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
 
     # Predictions
-    predictions = model.predict(df_scaled)
+    # predictions = model.predict(df_scaled)
+    predictions = model.predict(df)
     return predictions
 
 # Main Streamlit app logic
