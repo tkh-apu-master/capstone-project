@@ -36,7 +36,12 @@ def load_dnn_model(fold):
 # Define function for processing data
 def process_data(model, df):
     # Filter the dataframe to include only the required columns
-    dfAddress = df['Address']
+    # Separate the Address column
+    if 'Address' in df.columns:
+        dfAddress = df['Address']
+        df = df.drop(columns=['Address'])
+    else:
+        dfAddress = None
 
     required_columns = [
         'Avg_min_between_sent_tnx', 'Avg_min_between_received_tnx',
@@ -127,11 +132,16 @@ def main():
             model = load_dnn_model(selected_fold)
 
         # Process data with selected model
-        predictions = process_data(model, df)
+        predictions, dfAddress = process_data(model, df)
+
+        # Combine predictions with original data
+        if dfAddress is not None:
+            df['Address'] = dfAddress
+        df['Prediction'] = predictions
 
         # Display predictions
         st.write("Predictions:")
-        st.write(predictions)
+        st.write(df[['Address', 'Prediction']])
 
         # Add download button for predictions
         csv_file = df.copy()
