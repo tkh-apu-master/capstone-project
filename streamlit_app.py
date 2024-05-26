@@ -35,42 +35,48 @@ def load_dnn_model(fold):
 
 # Define function for processing data
 def process_data(model, df):
+
+
+    # TODO: ChatGPT implementation
     # Preprocess data
-    # imputer = SimpleImputer(strategy='median')
-    # scaler = StandardScaler()
-    # df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
-    # df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
-
-    # Omit first two columns (Index, Address)
-    df = df.iloc[:, 1:]
-    categories = df.select_dtypes('O').columns.astype('category')
-    numericals = df.select_dtypes(include=['float', 'int']).columns
-
-    # Drop the two categorical features
-    df.drop(df[categories], axis=1, inplace=True)
-
-    # Replace missing values of numerical variables with median
-    df.fillna(df.median(), inplace=True)
-
-    # Filtering the features with 0 variance
-    no_var = df.var() == 0
-    # Drop features with 0 variance --- these features will not help in the performance of the model
-    df.drop(df.var()[no_var].index, axis=1, inplace=True)
-
-    drop = ['total_transactions_(including_tnx_to_create_contract)', 'ERC20_avg_val_rec',
-            'ERC20_avg_val_rec', 'ERC20_max_val_rec', 'ERC20_min_val_rec', 'ERC20_uniq_rec_contract_addr',
-            'max_val_sent', 'ERC20_avg_val_sent',
-            'ERC20_min_val_sent', 'ERC20_max_val_sent', 'Unique_Sent_To_Addresses',
-            'Unique_Received_From_Addresses', 'total_ether_received', 'ERC20_uniq_sent_token_name',
-            'min_value_received', 'min_val_sent', 'ERC20_uniq_rec_addr']
-    df.drop(drop, axis=1, inplace=True)
-
-    drops = ['ERC20_uniq_sent_addr']
-    df.drop(drops, axis=1, inplace=True)
+    imputer = SimpleImputer(strategy='mean')
+    scaler = StandardScaler()
+    df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+    df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
 
     # Predictions
-    # predictions = model.predict(df_scaled)
-    predictions = model.predict(df)
+    predictions = model.predict(df_scaled)
+
+    # TODO: My implementation
+    # Omit first two columns (Index, Address)
+    # df = df.iloc[:, 1:]
+    # categories = df.select_dtypes('O').columns.astype('category')
+    # numericals = df.select_dtypes(include=['float', 'int']).columns
+
+    # Drop the two categorical features
+    # df.drop(df[categories], axis=1, inplace=True)
+
+    # Replace missing values of numerical variables with median
+    # df.fillna(df.median(), inplace=True)
+
+    # Filtering the features with 0 variance
+    # no_var = df.var() == 0
+    # Drop features with 0 variance --- these features will not help in the performance of the model
+    # df.drop(df.var()[no_var].index, axis=1, inplace=True)
+
+    # drop = ['total_transactions_(including_tnx_to_create_contract)', 'ERC20_avg_val_rec',
+    #         'ERC20_avg_val_rec', 'ERC20_max_val_rec', 'ERC20_min_val_rec', 'ERC20_uniq_rec_contract_addr',
+    #         'max_val_sent', 'ERC20_avg_val_sent',
+    #         'ERC20_min_val_sent', 'ERC20_max_val_sent', 'Unique_Sent_To_Addresses',
+    #         'Unique_Received_From_Addresses', 'total_ether_received', 'ERC20_uniq_sent_token_name',
+    #         'min_value_received', 'min_val_sent', 'ERC20_uniq_rec_addr']
+    # df.drop(drop, axis=1, inplace=True)
+
+    # drops = ['ERC20_uniq_sent_addr']
+    # df.drop(drops, axis=1, inplace=True)
+
+    # predictions = model.predict(df)
+
     return predictions
 
 # Main Streamlit app logic
