@@ -60,7 +60,7 @@ def process_data(model, df):
     drop = ['total_transactions_(including_tnx_to_create_contract)', 'ERC20_avg_val_rec',
             'ERC20_avg_val_rec', 'ERC20_max_val_rec', 'ERC20_min_val_rec', 'ERC20_uniq_rec_contract_addr',
             'max_val_sent', 'ERC20_avg_val_sent',
-            'ERC20_min_val_sent', 'ERC20_max_val_sent', 'Total_ERC20_tnxs', 'Unique_Sent_To_Addresses',
+            'ERC20_min_val_sent', 'ERC20_max_val_sent', 'Unique_Sent_To_Addresses',
             'Unique_Received_From_Addresses', 'total_ether_received', 'ERC20_uniq_sent_token_name',
             'min_value_received', 'min_val_sent', 'ERC20_uniq_rec_addr']
     df.drop(drop, axis=1, inplace=True)
