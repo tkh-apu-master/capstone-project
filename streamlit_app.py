@@ -33,37 +33,40 @@ def load_dnn_model(fold):
     dnn_model_weights.load_weights(model_weights_filename)
     return dnn_model_weights
 
+# Define required features for each model
+required_features = [
+    'Avg_min_between_sent_tnx', 'Avg_min_between_received_tnx',
+    'Time_Diff_between_first_and_last_(Mins)', 'Sent_tnx', 'Received_Tnx',
+    'Number_of_Created_Contracts', 'max_value_received', 'avg_val_received',
+    'avg_val_sent', 'total_Ether_sent', 'total_ether_balance',
+    'ERC20_total_Ether_received', 'ERC20_total_ether_sent',
+    'ERC20_total_Ether_sent_contract', 'ERC20_uniq_sent_addr.1',
+    'ERC20_uniq_rec_token_name'
+]
+
 # Define function for processing data
 def process_data(model, df):
-    # Filter the dataframe to include only the required columns
-    # Separate the Address column
+    # Separate the Address and FLAG columns
     if 'Address' in df.columns:
         dfAddress = df['Address']
         df = df.drop(columns=['Address'])
     else:
         dfAddress = None
 
-    required_columns = [
-        'Avg_min_between_sent_tnx', 'Avg_min_between_received_tnx',
-        'Time_Diff_between_first_and_last_(Mins)', 'Sent_tnx', 'Received_Tnx',
-        'Number_of_Created_Contracts', 'max_value_received', 'avg_val_received',
-        'avg_val_sent', 'total_Ether_sent', 'total_ether_balance',
-        'ERC20_total_Ether_received', 'ERC20_total_ether_sent',
-        'ERC20_total_Ether_sent_contract', 'ERC20_uniq_sent_addr.1',
-        'ERC20_uniq_rec_token_name'
-    ]
+    if 'FLAG' in df.columns:
+        df = df.drop(columns=['FLAG'])
 
     # Filter the dataframe to include only the required columns
-    df = df[required_columns]
+    df = df[required_features]
 
-    print("df.shape: ", df.shape)
-
-    # TODO: ChatGPT implementation
     # Preprocess data
     imputer = SimpleImputer(strategy='mean')
     scaler = StandardScaler()
     df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
     df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
+
+
+    print("df.shape: ", df.shape)
 
     # Predictions
     predictions = model.predict(df_scaled)
@@ -98,7 +101,7 @@ def process_data(model, df):
 
     # predictions = model.predict(df)
 
-    return predictions
+    return predictions, dfAddress
 
 # Main Streamlit app logic
 def main():
