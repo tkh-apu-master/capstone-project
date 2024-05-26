@@ -39,10 +39,12 @@ def process_data(model, df):
     imputer = SimpleImputer(strategy='mean')
     scaler = StandardScaler()
     df_filled = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
-    df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
+
+    # TODO
+    # df_scaled = pd.DataFrame(scaler.fit_transform(df_filled), columns=df.columns)
 
     # Predictions
-    predictions = model.predict(df_scaled)
+    predictions = model.predict(df_filled)
     return predictions
 
 # Main Streamlit app logic
