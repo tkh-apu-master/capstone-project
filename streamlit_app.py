@@ -35,7 +35,21 @@ def load_dnn_model(fold):
 
 # Define function for processing data
 def process_data(model, df):
+    # Filter the dataframe to include only the required columns
+    dfAddress = df['Address']
 
+    required_columns = [
+        'Avg_min_between_sent_tnx', 'Avg_min_between_received_tnx',
+        'Time_Diff_between_first_and_last_(Mins)', 'Sent_tnx', 'Received_Tnx',
+        'Number_of_Created_Contracts', 'max_value_received', 'avg_val_received',
+        'avg_val_sent', 'total_Ether_sent', 'total_ether_balance',
+        'ERC20_total_Ether_received', 'ERC20_total_ether_sent',
+        'ERC20_total_Ether_sent_contract', 'ERC20_uniq_sent_addr.1',
+        'ERC20_uniq_rec_token_name'
+    ]
+
+    # Filter the dataframe to include only the required columns
+    df = df[required_columns]
 
     # TODO: ChatGPT implementation
     # Preprocess data
