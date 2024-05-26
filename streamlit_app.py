@@ -56,6 +56,8 @@ def process_data(model, df):
     # Filter the dataframe to include only the required columns
     df = df[required_columns]
 
+    print(df.shape)
+
     # TODO: ChatGPT implementation
     # Preprocess data
     imputer = SimpleImputer(strategy='mean')
