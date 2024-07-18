@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 import pickle
-from tensorflow.keras.models import model_from_json
+from tensorflow.keras.models import model_from_json, Sequential
 
 # Define functions for loading models
 def load_lr_model(fold):
@@ -28,10 +28,13 @@ def load_dnn_model(fold):
     model_architecture_filename = f"DNN_fold_{fold}_architecture.json"
     with open(model_architecture_filename, 'r') as f:
         dnn_model_architecture = f.read()
+
+    # Correctly load the architecture and weights
+    dnn_model = model_from_json(dnn_model_architecture, custom_objects={"Sequential": Sequential})
+
     model_weights_filename = f"DNN_fold_{fold}_weights.h5"
-    dnn_model_weights = model_from_json(dnn_model_architecture)
-    dnn_model_weights.load_weights(model_weights_filename)
-    return dnn_model_weights
+    dnn_model.load_weights(model_weights_filename)
+    return dnn_model
 
 # Define required features for each model
 required_features = [
